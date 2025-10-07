@@ -16,7 +16,7 @@ def create_app(db_url=None):
     app = Flask(__name__)
    
     # === JWT Configuration ===
-    app.config["JWT_SECRET_KEY"] = "FARHAN"
+    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=30)
     app.config["PROPAGATE_EXCEPTIONS"] = True
     jwt = JWTManager(app)
