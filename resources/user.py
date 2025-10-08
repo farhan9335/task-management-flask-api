@@ -6,6 +6,7 @@ from schemas import UserSchema,UpdateUserSchema
 from models import UserModel
 from sqlalchemy.exc import SQLAlchemyError
 from passlib.hash import pbkdf2_sha256
+from flask_jwt_extended import jwt_required,get_jwt_identity,get_jwt
 
 blp = Blueprint("users","Users",description="Operations on users")
 
@@ -43,11 +44,17 @@ class User(MethodView):
         return {"message":f"User Id {user.id} deleted successfully"}
 
 
+
 @blp.route("/user")
 class UserList(MethodView):
     
+    @jwt_required()
     @blp.response(200,UserSchema(many=True))
     def get(self):
+        current_user_id = get_jwt_identity()
+        current_user = UserModel.query.get(current_user_id)
+        if not current_user or current_user.role !="admin":
+            abort(403,message="Access denied. Admins only")
         logging.info("Fetch all users")
         users = UserModel.query.all()
         logging.info(f"Reterived {len(users)} users")

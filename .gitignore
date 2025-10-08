@@ -1,0 +1,16 @@
+# Environment variables
+.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# SQLite database (if still used)
+instance/data.db
+
+# Migrations (optional, if you want to exclude generated migration history)
+migrations/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
