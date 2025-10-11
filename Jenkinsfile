@@ -1,0 +1,43 @@
+pipeline{
+    agent{
+        docker{
+            image 'python:3.11'
+        }
+    }
+    environment{
+        FLASK_ENV = 'development'
+    }
+    stages{
+        stage('Checkout'){
+            steps{
+                git 'https://github.com/farhan9335/task-management-flask-api.git'
+            }
+        }
+        stage('Install Dependencies'){
+            sh 'pip install --upgrade pip'
+            sh 'pip install -r .\requirements.txt'
+        }
+        stage('Run Flask App'){
+            steps{
+                sh 'python app.py'
+            }
+        }
+        stage('Deploy'){
+            when{
+                branch 'main'
+            }
+            steps{
+                echo '🚀 Deploying Flask API...'
+                // Add deployment script or Docker push here
+            }
+        }
+    }
+    post{
+        success{
+            echo '✅ Build and deployment succeeded.'
+        }
+        failure{
+            echo '❌ Build failed. Check logs for details.'
+        }
+    }
+}
