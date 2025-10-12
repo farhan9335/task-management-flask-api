@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.11'
-        }
-    }
+    agent any
     environment {
         FLASK_ENV = 'development'
     }
@@ -13,15 +9,15 @@ pipeline {
                 git 'https://github.com/farhan9335/task-management-flask-api.git'
             }
         }
-        stage('Install Dependencies') {
+        stage('Build and Run in Docker') {
             steps {
-                sh 'pip install --upgrade pip'
-                sh 'pip install -r requirements.txt'
-            }
-        }
-        stage('Run Flask App') {
-            steps {
-                sh 'python app.py'
+                script {
+                    docker.image('python:3.11').inside {
+                        sh 'pip install --upgrade pip'
+                        sh 'pip install -r requirements.txt'
+                        sh 'python app.py'
+                    }
+                }
             }
         }
         stage('Deploy') {
