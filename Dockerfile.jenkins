@@ -1,0 +1,10 @@
+FROM jenkins/jenkins:lts
+
+USER root
+
+# Add Jenkins user to root group (group ID 0)
+RUN usermod -aG root jenkins && \
+    apt-get update && \
+    apt-get install -y docker.io
+
+USER jenkins
