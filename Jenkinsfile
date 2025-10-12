@@ -1,22 +1,30 @@
 pipeline {
     agent any
     environment {
-        FLASK_ENV = 'development'
+        FLASK_ENV = 'development'  // Used for build-time and runtime
     }
     stages {
         stage('Verify Docker Access') {
             steps {
-            sh 'docker version'
-        }
+                sh 'docker version'
+            }
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t flask-api .'
+                // Pass FLASK_ENV as a build argument
+                sh "docker build -t flask-api --build-arg FLASK_ENV=${FLASK_ENV} ."
             }
         }
         stage('Run Container') {
             steps {
-                sh 'docker run -d -p 5000:5000 --name flask-api-container flask-api'
+                // Pass FLASK_ENV as a runtime environment variable
+                sh """
+                docker run -d \
+                  --name flask-api-container \
+                  -p 5000:5000 \
+                  -e FLASK_ENV=${FLASK_ENV} \
+                  flask-api
+                """
             }
         }
         stage('Deploy') {
