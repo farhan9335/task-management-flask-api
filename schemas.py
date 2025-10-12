@@ -22,6 +22,7 @@ class UserSchema(Schema):
     password = fields.Str(required=True)
     role = fields.Str()
 
+
 class UpdateUserSchema(Schema):
     username = fields.Str()
     password = fields.Str()
