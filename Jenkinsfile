@@ -4,11 +4,11 @@ pipeline {
         FLASK_ENV = 'development'
     }
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/farhan9335/task-management-flask-api.git'
-            }
-        }
+        // stage('Checkout') {
+        //     // steps {
+        //     //     git 'https://github.com/farhan9335/task-management-flask-api.git'
+        //     // }
+        // }
         stage('Build and Run in Docker') {
             steps {
                 script {
