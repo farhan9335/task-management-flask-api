@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Run Container') {
             steps {
-                sh 'docker run -d -p 5009:5000 --name flask-api-container flask-api'
+                sh 'docker run -d -p 5000:5000 --name flask-api-container flask-api'
             }
         }
         stage('Deploy') {
