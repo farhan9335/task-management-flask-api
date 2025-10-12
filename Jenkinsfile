@@ -21,7 +21,7 @@ pipeline {
                 sh """
                 docker run -d \
                   --name flask-api-container \
-                  -p 5000:5000 \
+                  -p 5009:5000 \
                   -e FLASK_ENV=${FLASK_ENV} \
                   flask-api
                 """
