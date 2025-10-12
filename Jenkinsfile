@@ -4,6 +4,11 @@ pipeline {
         FLASK_ENV = 'development'
     }
     stages {
+        stage('Verify Docker Access') {
+            steps {
+            sh 'docker version'
+        }
+        }
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t flask-api .'
