@@ -16,5 +16,16 @@ Make sure the following are installed:
 
 ---
 
+Before Run these Project into Docker you need to run below command First
+
+1) docker build -t jenkins-dind-custom -f infra/Dockerfile.jenkins .
+
+2) docker run -d \
+  --name jenkins-dind \
+  -p 8080:8080 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  jenkins-dind-custom
+
 ## 📁 Project Structure
 
