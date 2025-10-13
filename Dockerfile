@@ -1,26 +1,22 @@
-# Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
-# Set build-time argument and default environment
-ARG FLASK_ENV=production
-ENV FLASK_ENV=${FLASK_ENV}
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Set environment variables
+ENV FLASK_ENV=production \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
 
-
-
-# Install Python dependencies
+# Install dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy application code
 COPY . .
 
-# Expose the port your Flask app runs on
+# Expose Flask port
 EXPOSE 5000
 
-# Run the application using Gunicorn
+# Start the app with Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:create_app()"]
