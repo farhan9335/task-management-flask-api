@@ -1,52 +1,69 @@
 pipeline {
     agent any
+
     environment {
-        FLASK_ENV = 'development'  // Used for build-time and runtime
+        FLASK_ENV = 'development'
+        IMAGE_NAME = 'flask-api'
+        CLUSTER_NAME = 'flask-cluster'
+        K8S_MANIFEST_DIR = 'k8s'
     }
+
     stages {
         stage('Verify Docker Access') {
             steps {
                 sh 'docker version'
             }
         }
+
         stage('Build Docker Image') {
             steps {
-                // Pass FLASK_ENV as a build argument
-                sh "docker build -t flask-api --build-arg FLASK_ENV=${FLASK_ENV} ."
+                sh "docker build -t ${IMAGE_NAME} --build-arg FLASK_ENV=${FLASK_ENV} ."
             }
         }
-        stage('Run Container') {
+
+        stage('Run Container (Local Test)') {
             steps {
-                // Pass FLASK_ENV as a runtime environment variable
                 sh """
                 docker run -d \
-                  --name flask-api-container \
+                  --name ${IMAGE_NAME}-container \
                   -p 5009:5000 \
                   -e FLASK_ENV=${FLASK_ENV} \
-                  flask-api
+                  ${IMAGE_NAME}
                 """
             }
         }
-        stage('Deploy') {
+
+        stage('Load Image into Kind') {
+            steps {
+                sh "/tmp/kind load docker-image ${IMAGE_NAME} --name ${CLUSTER_NAME}"
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
             when {
                 branch 'main'
             }
             steps {
-                echo '🚀 Deploying Flask API...'
-                // Add deployment logic here
+                echo '🚀 Deploying Flask API to Kubernetes...'
+                sh """
+                kubectl apply -f ${K8S_MANIFEST_DIR}/deployment.yaml
+                kubectl apply -f ${K8S_MANIFEST_DIR}/service.yaml
+                kubectl rollout status deployment/flask-api-deployment
+                """
             }
         }
     }
+
     post {
         always {
-            sh 'docker rm -f flask-api-container || true'
-            sh 'docker rmi flask-api || true'
+            sh "docker rm -f ${IMAGE_NAME}-container || true"
+            sh "docker rmi ${IMAGE_NAME} || true"
         }
         success {
-            echo '✅ Build and deployment succeeded.'
+            echo '✅ Build and deployment to Kubernetes succeeded.'
         }
         failure {
-            echo '❌ Build failed. Check logs for details.'
+            echo '❌ Build or deployment failed. Check logs for details.'
         }
     }
 }
