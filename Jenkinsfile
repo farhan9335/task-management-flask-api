@@ -40,9 +40,6 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            when {
-                branch 'main'
-            }
             steps {
                 echo '🚀 Deploying Flask API to Kubernetes...'
                 sh """
